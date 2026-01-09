@@ -84,7 +84,7 @@ const Home: React.FC = () => {
                 <div className="container">
                     <h1>Largest Variety of Food Carts in India</h1>
                     <p>Manufacturing custom food carts, kiosks, and trailers since {settings.year_founded || '1988'}</p>
-                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                    <div className="hero-actions">
                         <Link to="/new" className="btn btn-primary">Explore New Carts</Link>
                         <Link to="/reseller" className="btn btn-outline">Used Carts</Link>
                     </div>

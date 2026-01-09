@@ -13,12 +13,17 @@ const Navbar: React.FC = () => {
     const location = useLocation();
     const { user, logout } = useAuth();
     const [settings, setSettings] = useState<Settings>({});
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const isActive = (path: string) => location.pathname === path ? 'active' : '';
 
     useEffect(() => {
         fetchSettings();
     }, []);
+
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location.pathname]);
 
     const fetchSettings = async () => {
         try {
@@ -57,7 +62,18 @@ const Navbar: React.FC = () => {
                     <Link to="/" className="logo">
                         Shreeyadunandan
                     </Link>
-                    <ul className="nav-links">
+
+                    <button
+                        type="button"
+                        className="nav-toggle"
+                        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                        aria-expanded={menuOpen}
+                        onClick={() => setMenuOpen((v) => !v)}
+                    >
+                        {menuOpen ? '✕' : '☰'}
+                    </button>
+
+                    <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
                         <li><Link to="/" className={isActive('/')}>Home</Link></li>
                         <li><Link to="/reseller" className={isActive('/reseller')}>Re-Seller</Link></li>
                         <li><Link to="/accessories" className={isActive('/accessories')}>Accessories</Link></li>
