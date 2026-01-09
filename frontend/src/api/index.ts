@@ -1,6 +1,23 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const normalizeApiBaseUrl = (url?: string): string => {
+    const fallback = '/api';
+    if (!url) return fallback;
+
+    const trimmed = String(url).trim();
+    if (!trimmed) return fallback;
+
+    // Full URL: ensure it ends with /api
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        const noTrailingSlash = trimmed.replace(/\/$/, '');
+        return noTrailingSlash.endsWith('/api') ? noTrailingSlash : `${noTrailingSlash}/api`;
+    }
+
+    // Relative base (e.g. '/api' for Vercel rewrites)
+    return trimmed.replace(/\/$/, '');
+};
+
+const API_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
 const api = axios.create({
     baseURL: API_URL,
