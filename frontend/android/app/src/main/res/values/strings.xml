@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">foodcart</string>
+    <string name="title_activity_main">foodcart</string>
+    <string name="package_name">com.fc.app</string>
+    <string name="custom_url_scheme">com.fc.app</string>
+</resources>

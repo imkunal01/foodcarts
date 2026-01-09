@@ -1,7 +1,8 @@
 {
-  "name": "Your App Name",
-  "short_name": "AppName",
+  "name": "FoodCarts",
+  "short_name": "FoodCarts",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#E63946",
@@ -10,12 +11,14 @@
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
