@@ -26,26 +26,67 @@ app.use(helmet());
 app.use(compression());
 
 const allowedOrigins = [
+    // Env-configured origins
     process.env.FRONTEND_URL,
     ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
+
+    // Common local dev
     'http://localhost:5173',
     'http://localhost:3000',
     'http://localhost:8000',
 
+    // Capacitor / Ionic WebView
+    'capacitor://localhost',
+    'ionic://localhost',
+
+    // Production frontend (safe default)
+    'https://foodcarts.vercel.app'
 ]
     .map((o) => (o || '').trim())
     .filter(Boolean)
     .map((o) => o.replace(/\/$/, ''));
+
+const isAllowedOrigin = (origin: string): boolean => {
+    const normalized = origin.replace(/\/$/, '');
+
+    // Exact matches first
+    if (allowedOrigins.includes(normalized)) return true;
+
+    // Optional wildcard support: allow entries like "*.vercel.app"
+    // (kept off by default unless explicitly provided via env)
+    try {
+        const url = new URL(normalized);
+        const host = url.host;
+        const protocol = url.protocol;
+
+        return allowedOrigins.some((allowed) => {
+            if (!allowed.includes('*')) return false;
+
+            // Only support patterns like "https://*.vercel.app" or "*.vercel.app"
+            const allowedNormalized = allowed.replace(/\/$/, '');
+            const allowedHasProtocol = allowedNormalized.startsWith('http://') || allowedNormalized.startsWith('https://');
+            const allowedUrl = allowedHasProtocol ? new URL(allowedNormalized.replace('*.', 'wildcard.')) : null;
+
+            const allowedProtocol = allowedUrl ? allowedUrl.protocol : undefined;
+            const allowedHostSuffix = (allowedHasProtocol ? allowedUrl!.host : allowedNormalized)
+                .replace(/^wildcard\./, '')
+                .replace(/^\*\./, '')
+                .toLowerCase();
+
+            if (allowedProtocol && allowedProtocol !== protocol) return false;
+            return host.toLowerCase().endsWith(allowedHostSuffix);
+        });
+    } catch {
+        return false;
+    }
+};
 
 app.use(
     cors({
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
 
-            const normalized = origin.replace(/\/$/, '');
-            if (allowedOrigins.some((allowed) => normalized === allowed || normalized.startsWith(allowed))) {
-                return callback(null, true);
-            }
+            if (isAllowedOrigin(origin)) return callback(null, true);
 
             return callback(new Error('CORS_NOT_ALLOWED'));
         },
