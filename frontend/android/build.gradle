@@ -24,6 +24,18 @@ allprojects {
     }
 }
 
+// Ensure consistent Java compatibility across all modules (including Capacitor modules).
+// Capacitor 8 currently targets Java 21 by default; this override keeps builds working on JDK 17.
+subprojects { subproject ->
+    subproject.afterEvaluate {
+        def androidExt = subproject.extensions.findByName('android')
+        if (androidExt != null && androidExt.hasProperty('compileOptions')) {
+            androidExt.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+            androidExt.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
